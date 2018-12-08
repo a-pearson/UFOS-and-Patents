@@ -1,28 +1,52 @@
+################################################################################
+#                           Cleaning The UFO Data                              #
+################################################################################
+
 # Raw data import using the most recent file available from the kaggle 
-# Consolidated UFO and Weather Data
+# Downloaded Data Contained:
+      #  Consolidated UFO and Weather Data
+
+# -------- Packages & Libraries Used -------------------------------------------
 install.packages("tidyverse")
 install.packages("openair")
 library(openair)
 library(tidyverse)
+
+#--------- Importing Data ------------------------------------------------------
+
+# Confirm working directory
 getwd()
+#import the raw data downloaded from Kaggle
+# raw data also save to 1.RawData folder in workflow.
 ufo <- read.csv ("consolidated_weather_V03.csv")
 
+
+
+#========================= Exploring Data ======================================
+# Examine structure and variables in data set, summarize variables to ID ones we
+# will require.
 str(mydata)
 head(mydata)
 
 summary(ufo)
-# colour not useful
-# shape frequency counts
+# All weather related variables aren't of use.
+# colour and shape varibles not useful
+# Varibles of interest:
+      # state
+      # mday
+      # month
+      # year
+
 # look at all the columns, whats the min and max 
-# state, city, shape, colour, date
 
 
+#--------- Exploring State Varible  --------------------------------------------
 table(ufo$state) # frequency table 
 prop.table(table(ufo$state)) # proportion table
 barplot(table(ufo$state)) # visualize the data 
 # want to arrange the frequency counts or proportions
 
-ufo %>% count(state) # visualize like a frequency table pipe operater %>% (and then)
+ufo %>% count(state) # visualize like a frequency table
 ufo %>% count(state) %>% arrange(-n) # tells us top 10 states for sightings
 # took ufo and took number of states and arranged in descending order of n
 
@@ -41,53 +65,11 @@ ufo %>% count(state) %>% arrange(-n) # tells us top 10 states for sightings
 # 10 NC     1593
 # ... with 41 more rows
 
-# 8000 values in city, could do the same thing with the city
-ufo %>% count(city) %>% arrange(-n) 
-# city            n
-# <fct>       <int>
-# 1 Phoenix       342
-# 2 Seattle       318
-# 3 Portland      317
-# 4 Las Vegas     280
-# 5 Los Angeles   257
-# 6 San Diego     243
-# 7 Chicago       212
-# 8 Houston       195
-# 9 Orlando       188
-# 10 Tucson        188
-
-ufo %>% count(city) %>% arrange(-n) %>% print(n=30) # gives you a table of 30
-
-# move on to colour, mostly missing values so it can be skipped move on to shape
-ufo %>% count(shape) %>% arrange(-n) 
-# shape         n
-# <fct>     <int>
-# 1 Light     15493
-#2 Circle     7680
-#3 Triangle   6770
-#4 Fireball   6193
-#5 Sphere     4799
-#6 Disk       3470
-#7 Oval       3171
-#8 Formation  2275
-#9 Changing   1856
-#10 Other        79
-#11 Rectangle    15
-#12 Diamond      14
-#13 Cigar        12
-#14 Cylinder     12
-#15 Chevron      11
-#16 Flash        11
-#17 VARIOUS       4
-#18 EGG           3
-#19 ""            2
-
-
+#--------- Exploring Month/Year/Day Variables ----------------------------------
 #MONTH
-hist(ufo$month)
-# peak in July, why is there a peak in July, 
-# data set ond outdoor activity 
+hist(ufo$month) 
 
+# YEAR
 hist(ufo$year) # hard to see so look at 
 ufo %>% count(year) %>% arrange(-n) # after 2010 here is a spike in the data, 
 # what happened in terms of patents in those years, were there lots of patents 
@@ -108,64 +90,65 @@ ufo %>% count(year) %>% arrange(-n) # after 2010 here is a spike in the data,
 # 0  2007  2404
 # ... with 11 more rows
 
-# what about hours?  Seems to be sightings when people are out and about and 
-# awake
-hist(ufo$hour)
-ufo %>% count(hour) %>% arrange(-n)
-
-hist(ufo$mday, breaks = 50)
+# Day
+hist(ufo$mday, breaks = 31)
 ufo %>% count(mday) %>% arrange(-n)
 
-############TRENDS#########
+
+
+##################### Summary of Observed Trends Present #######################
 # most sightings in july and august
-# more sightings at certain times of day, 8, 9, 10pm
-# more sightings recently, 2010 onwards
+# most sightings in California
+# more sightings recently, 2010 onward
 
 
-# other datasets
-# was the sun shining when there are more UFO sightings, is it daylight hours is 
-# it evening hours? Was it evening / dusk 
-# does the angle of the sun make us see more UFO's 
-
-# trying to find trends or things in this data set, which can be correlated in 
-# other data sets
 
 
-#------------ make a subset of data from 2000 - 2010 -----------------------
+#======================= Cleaning Data Set =====================================
+################################################################################
+#
+# In this section we have the code used to clean the raw data file into the 
+# files used for analysis. In this section of code our goal is to:
+#       - Remove the unnessicary variables from the data set, keeping only the 
+#         "state", "year", "month" and "day" variables.
+#       - Consolidate the time varibles into a single date varible. 
+#       - Determine the frequency of each date in the data set, and therfore the
+#         frequency of sightings on each day.
+#       - Create a continous Date variable by inserting days on which there were
+#         no sightings and assigning them a frequency of 0.
+#       - Subsetting this data to look at the date range of 2006-2016.
+#  * not nessicarily in this order *
+################################################################################
 
-# isolate data
-ufo.isolated <- ufo[c("state", "year")]
-rm(ufo.isolated)
 
-#--------- merge year, month, day columns with paste -------------------------
-# then turn into date format with merge 
-# seq.date(as date("")from, to, )
+
+#--------- Removing unwanted varibles ------------------------------------------
 
 head(ufo)
-ufo.cut <- ufo[c("state", "mday", "month", "year")]
-head(ufo.cut)
-ufo.cut$Date
+ufo.cut <- ufo[c("state", "mday", "month", "year")] #select just desired columns
+head(ufo.cut) # chekc to see if it worked
+
+#--------- Merging time variables into single Date variable --------------------
+
+ufo.cut$Date   # create new date column
 # for loop to merge the date columns into one w/ universal format.
 for(i in 1:4){
   ufo.cut$Date <- as.Date(paste(ufo.cut$year,ufo.cut$month,
-                                       ufo.cut$mday,sep="-"), format = "%Y-%m-%d")
+                                    ufo.cut$mday,sep="-"), format = "%Y-%m-%d")
   
 }
 
-
-
-#--------- Creating Frequency Table with all dates -----------
+#--------- Creating Frequency Table with all dates -----------------------------
 # create the freq. table for sightings per day.
 
-
-table.1 <- table(ufo.cut$Date) # use table to find frequencies
+table.1.t <- table(ufo.cut$Date) # use table to find frequencies
 
 View(ufo.cut$Date)
 
-ufo.freq.table.all.dates <- as.data.frame(table.1) # change to dataframe.
+ufo.freq.table.all.dates <- as.data.frame(table.1.t) # change to dataframe.
 
 
-#------------------ make sub set of data w/ frequencies, from 2006-2016 --------
+#--------- Make sub set of data w/ frequencies, from 2006-2016 -----------------
     # order the ufo.cut dataframe by date 
 ufo.cut <- ufo.cut[order(as.Date(ufo.cut$Date, format="%Y-%m-%d")),]
 class(ufo.cut$Date)
@@ -178,7 +161,7 @@ ufo.cut.final <-ufo.cut.dates[,c("state", "Date")]
 write.csv(ufo.cut.final, paste(path.cd, "ufo.dates_range.states.csv"))
 
 
-#---------- Create another Frequency Table for the date range --------
+#--------- Create another Frequency Table for the date range -------------------
 table2.t <- table(ufo.cut.final$Date)  # find frequency of each date
 ufo.freq.table.date.range <- as.data.frame(table2.t)  # make the table into data
 # frame.
@@ -187,7 +170,8 @@ write.csv(ufo.freq.table.date.range, paste(path.cd, "UFO.freq.date.range"))
 # write as a csv. and save
 
 
-#================= Creating master Frequency Table w/ all Dates ===============
+
+#=-=-=-=-=-=- Creating master Frequency Table w/ all Dates -=-=-=-=-=-=-=-=-=-=-
 
 #----------- Making Dataframe with all dates in range --------------------------
 
@@ -203,7 +187,7 @@ missing.dates.df$frequency <- rep(NA, length(all.dates))
 # Rename the columns
 colnames(missing.dates.df) <- c("Date", "Frequency")
 
-#-------------------- Merging the missing dates w/ UFO dates -------------------
+#----------- Merging the missing dates w/ UFO dates ----------------------------
 
 final.ufo.freq.m <- merge(ufo.freq.table.date.range, missing.dates.df, 
                         by.x= "Date", by.y="Date", all=TRUE)
@@ -218,9 +202,17 @@ colnames(final.ufo.freq) <- c("Date", "Frequency")
 # replace all NA values with 0
 final.ufo.freq$Frequency[is.na(final.ufo.freq$Frequency)] <- 0
  # check to see if it worked
-any(is.na(final.ufo.freq.n$Frequency))
+any(is.na(final.ufo.freq$Frequency))
 # save as csv
 write.csv(final.ufo.freq, paste(path.cd, "final.ufo.freq.csv"))
 
-#-------------------- 
+#==================== Determine Critical Sighting Value ========================
 
+# Use the mean of the sighting frequency to determine the critical value for 
+# sightings. This value will be used during analysis as the treshold for a day
+# to count as having a sighting.
+
+round(mean(final.ufo.freq$Frequency), digits = 0) #we want it rounded to the 
+# nearest whole number.    
+
+# Critical Value = 5
