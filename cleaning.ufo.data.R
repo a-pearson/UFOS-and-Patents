@@ -5,8 +5,8 @@ library(tidyverse)
 getwd()
 ufo <- read.csv ("consolidated_weather_V03.csv")
 
-str(ufo)
-head(ufo)
+str(mydata)
+head(mydata)
 
 summary(ufo)
 # colour not useful
@@ -132,8 +132,8 @@ ufo %>% count(mday) %>% arrange(-n)
 # make a subset of data from 2000 - 2010
 
 # isolate data
-# ufo.isolated <- ufo[c("state", "year")]
-# rm(ufo.isolated)
+ufo.isolated <- ufo[c("state", "year")]
+rm(ufo.isolated)
 
 # merge with paste
 # then turn into date format with merge 
@@ -141,14 +141,11 @@ ufo %>% count(mday) %>% arrange(-n)
 
 head(ufo)
 ufo.cut <- ufo[c("state", "mday", "month", "year")]
-
-write.csv(ufo.cut,"ufo.cut.csv")
 head(ufo.cut)
-
-ufo.cut$Date
+ufo.cut$unformatted
 # for loop to merge the date columns into one w/ universal format.
 for(i in 1:4){
-  ufo.cut$Date <- as.Date(paste(ufo.cut$year,ufo.cut$month,
+  ufo.cut$unformatted <- as.Date(paste(ufo.cut$year,ufo.cut$month,
                                        ufo.cut$mday,sep="-"))
   
 }
@@ -160,58 +157,15 @@ for(i in 1:4){
 # create the freq. table for sightings per day.
 
 
-# create a vector to be used in the frequency table
-freq <- as.character(ufo.cut$Date)
-
-
-# make a frequency table 
-table.1 <- table(ufo.cut$Date)
-
-
-# convert frequency table to data frame for easy viewing 
-frq <- as.data.frame(table.1)
-
-#----------------- select dates of interest in the script
-
-ufo.cut.dates <- ufo.cut[ufo.cut$year> 2005 & ufo.cut$year <2016, ]
-
-# now we need to make a frequency table for the section of data we are 
-# interested in
-
-selected.table <- table(ufo.cut.dates$Date)
-
-freq.df.UFO <- as.data.frame(selected.table)
-colnames(freq.df.UFO) <- c("Date", "frequency)
-
-#---------- Days with no observations ---------------
-
-# create a frequency table with all dates to be merged with the dataset to make 
-# the data continuous for analysis
-
-# using the sequence function, the date table can be created
-all.dates <- seq(as.Date("2006-01-01"), as.Date("2016-01-01"), "day")
+freq. <- as.character(ufo.cut$unformatted)
 
 
 
-# make a dataframe by combing the two vectors
-missing.dates.df <- as.data.frame(c(all.dates))
+table.1 <- table(ufo.cut$unformatted)
 
-# add a variable to the dataframe with nothing in it
+View(ufo.cut$unformatted)
 
-missing.dates.df$frequency <- rep(NA, length(all.dates))
-colnames(missing.dates.df) <- c("date", "frequency")
-
-# Now we have a data frame with two variables, "date" and "frequency" 
-
-missing.dates.df
-
-
-
-# ------------- MERGING OBSERVATION DATA WITH NO OBSERVATION DATA --------------
-
-merged.data <- merge(freq.df.UFO, missing.dates.df, by.x = "Date", 
-                     by.y = "date", all = TRUE)
-
+frq. <- as.data.frame(table.1)
 
 
 
