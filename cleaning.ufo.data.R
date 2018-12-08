@@ -182,5 +182,45 @@ write.csv(ufo.cut.final, paste(path.cd, "ufo.dates_range.states.csv"))
 table2.t <- table(ufo.cut.final$Date)  # find frequency of each date
 ufo.freq.table.date.range <- as.data.frame(table2.t)  # make the table into data
 # frame.
+colnames(ufo.freq.table.date.range) <- c("Date", "Frequency")
 write.csv(ufo.freq.table.date.range, paste(path.cd, "UFO.freq.date.range"))
 # write as a csv. and save
+
+
+#================= Creating master Frequency Table w/ all Dates ===============
+
+#----------- Making Dataframe with all dates in range --------------------------
+
+ # use sequence function to make all dates, range 2006< x < 2016
+all.dates <- seq(as.Date("2006-01-01"), as.Date("2015-12-31"), "day")
+
+# make into a dataframe
+missing.dates.df <- as.data.frame(c(all.dates))
+
+# add another column for frequency 
+missing.dates.df$frequency <- rep(NA, length(all.dates))
+
+# Rename the columns
+colnames(missing.dates.df) <- c("Date", "Frequency")
+
+#-------------------- Merging the missing dates w/ UFO dates -------------------
+
+final.ufo.freq.m <- merge(ufo.freq.table.date.range, missing.dates.df, 
+                        by.x= "Date", by.y="Date", all=TRUE)
+# check to confirm merge worked by looking for NA in the Frequency Data from the
+# UFO dataframe
+any(is.na(final.ufo.freq.m$Frequency.x))
+
+# cut the Frequency.y column
+final.ufo.freq <- final.ufo.freq.m[, c("Date", "Frequency.x")]
+# Rename Frequency.x to Frequency
+colnames(final.ufo.freq) <- c("Date", "Frequency")
+# replace all NA values with 0
+final.ufo.freq$Frequency[is.na(final.ufo.freq$Frequency)] <- 0
+ # check to see if it worked
+any(is.na(final.ufo.freq.n$Frequency))
+# save as csv
+write.csv(final.ufo.freq, paste(path.cd, "final.ufo.freq.csv"))
+
+#-------------------- 
+
