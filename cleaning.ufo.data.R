@@ -1,6 +1,8 @@
 # Raw data import using the most recent file available from the kaggle 
 # Consolidated UFO and Weather Data
-
+install.packages("tidyverse")
+install.packages("openair")
+library(openair)
 library(tidyverse)
 getwd()
 ufo <- read.csv ("consolidated_weather_V03.csv")
@@ -129,44 +131,56 @@ ufo %>% count(mday) %>% arrange(-n)
 # other data sets
 
 
-# make a subset of data from 2000 - 2010
+#------------ make a subset of data from 2000 - 2010 -----------------------
 
 # isolate data
 ufo.isolated <- ufo[c("state", "year")]
 rm(ufo.isolated)
 
-# merge with paste
+#--------- merge year, month, day columns with paste -------------------------
 # then turn into date format with merge 
 # seq.date(as date("")from, to, )
 
 head(ufo)
 ufo.cut <- ufo[c("state", "mday", "month", "year")]
 head(ufo.cut)
-ufo.cut$unformatted
+ufo.cut$Date
 # for loop to merge the date columns into one w/ universal format.
 for(i in 1:4){
-  ufo.cut$unformatted <- as.Date(paste(ufo.cut$year,ufo.cut$month,
-                                       ufo.cut$mday,sep="-"))
+  ufo.cut$Date <- as.Date(paste(ufo.cut$year,ufo.cut$month,
+                                       ufo.cut$mday,sep="-"), format = "%Y-%m-%d")
   
 }
 
-# make a data frame with all the missing dates, then use rbind(a,b) to combine 
-# the two.  Then sort by data
 
-#--------- Creating Frequency Table -----------
+
+#--------- Creating Frequency Table with all dates -----------
 # create the freq. table for sightings per day.
 
 
-freq. <- as.character(ufo.cut$unformatted)
+table.1 <- table(ufo.cut$Date) # use table to find frequencies
+
+View(ufo.cut$Date)
+
+ufo.freq.table.all.dates <- as.data.frame(table.1) # change to dataframe.
 
 
+#------------------ make sub set of data w/ frequencies, from 2006-2016 --------
+    # order the ufo.cut dataframe by date 
+ufo.cut <- ufo.cut[order(as.Date(ufo.cut$Date, format="%Y-%m-%d")),]
+class(ufo.cut$Date)
 
-table.1 <- table(ufo.cut$unformatted)
+# select all rows from the year range >2005 but <2016
+ufo.cut.dates <- ufo.cut[ufo.cut$year>2005 & ufo.cut$year<2016,] 
+write.csv(ufo.cut.dates, paste(path.cd, "ufo.cut.dates.csv"))
+# save a final file w/ just "Dates" and "state"
+ufo.cut.final <-ufo.cut.dates[,c("state", "Date")]                     
+write.csv(ufo.cut.final, paste(path.cd, "ufo.dates_range.states.csv"))
 
-View(ufo.cut$unformatted)
 
-frq. <- as.data.frame(table.1)
-
-
-
-
+#---------- Create another Frequency Table for the date range --------
+table2.t <- table(ufo.cut.final$Date)  # find frequency of each date
+ufo.freq.table.date.range <- as.data.frame(table2.t)  # make the table into data
+# frame.
+write.csv(ufo.freq.table.date.range, paste(path.cd, "UFO.freq.date.range"))
+# write as a csv. and save
