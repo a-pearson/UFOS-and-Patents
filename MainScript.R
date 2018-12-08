@@ -1,11 +1,18 @@
 ################################################################################
 
+#                                 MAIN SCRIPT                                  #
+
+################################################################################
+#
+#  This script contains the code to set up the work flow used thorughout the 
+# rest of the project. It also contains housekeeping code.
+#
+################################################################################
 
 
 
+#============================ WORK FLOW SET UP =================================
 work.d <- getwd()
-
-
 
 out.put.folders <- c("1.Raw.Data","2.Clean.Data", "3.Analysis", "4.Graphs", 
                      "4.Graphs/Table")
