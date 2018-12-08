@@ -1,6 +1,8 @@
 # Raw data import using the most recent file available from the kaggle 
 # Consolidated UFO and Weather Data
-
+install.packages("tidyverse")
+install.packages("openair")
+library(openair)
 library(tidyverse)
 getwd()
 ufo <- read.csv ("consolidated_weather_V03.csv")
@@ -129,44 +131,96 @@ ufo %>% count(mday) %>% arrange(-n)
 # other data sets
 
 
-# make a subset of data from 2000 - 2010
+#------------ make a subset of data from 2000 - 2010 -----------------------
 
 # isolate data
 ufo.isolated <- ufo[c("state", "year")]
 rm(ufo.isolated)
 
-# merge with paste
+#--------- merge year, month, day columns with paste -------------------------
 # then turn into date format with merge 
 # seq.date(as date("")from, to, )
 
 head(ufo)
 ufo.cut <- ufo[c("state", "mday", "month", "year")]
 head(ufo.cut)
-ufo.cut$unformatted
+ufo.cut$Date
 # for loop to merge the date columns into one w/ universal format.
 for(i in 1:4){
-  ufo.cut$unformatted <- as.Date(paste(ufo.cut$year,ufo.cut$month,
-                                       ufo.cut$mday,sep="-"))
+  ufo.cut$Date <- as.Date(paste(ufo.cut$year,ufo.cut$month,
+                                       ufo.cut$mday,sep="-"), format = "%Y-%m-%d")
   
 }
 
-# make a data frame with all the missing dates, then use rbind(a,b) to combine 
-# the two.  Then sort by data
 
-#--------- Creating Frequency Table -----------
+
+#--------- Creating Frequency Table with all dates -----------
 # create the freq. table for sightings per day.
 
 
-freq. <- as.character(ufo.cut$unformatted)
+table.1 <- table(ufo.cut$Date) # use table to find frequencies
+
+View(ufo.cut$Date)
+
+ufo.freq.table.all.dates <- as.data.frame(table.1) # change to dataframe.
 
 
+#------------------ make sub set of data w/ frequencies, from 2006-2016 --------
+    # order the ufo.cut dataframe by date 
+ufo.cut <- ufo.cut[order(as.Date(ufo.cut$Date, format="%Y-%m-%d")),]
+class(ufo.cut$Date)
 
-table.1 <- table(ufo.cut$unformatted)
+# select all rows from the year range >2005 but <2016
+ufo.cut.dates <- ufo.cut[ufo.cut$year>2005 & ufo.cut$year<2016,] 
+write.csv(ufo.cut.dates, paste(path.cd, "ufo.cut.dates.csv"))
+# save a final file w/ just "Dates" and "state"
+ufo.cut.final <-ufo.cut.dates[,c("state", "Date")]                     
+write.csv(ufo.cut.final, paste(path.cd, "ufo.dates_range.states.csv"))
 
-View(ufo.cut$unformatted)
 
-frq. <- as.data.frame(table.1)
+#---------- Create another Frequency Table for the date range --------
+table2.t <- table(ufo.cut.final$Date)  # find frequency of each date
+ufo.freq.table.date.range <- as.data.frame(table2.t)  # make the table into data
+# frame.
+colnames(ufo.freq.table.date.range) <- c("Date", "Frequency")
+write.csv(ufo.freq.table.date.range, paste(path.cd, "UFO.freq.date.range"))
+# write as a csv. and save
 
 
+#================= Creating master Frequency Table w/ all Dates ===============
 
+#----------- Making Dataframe with all dates in range --------------------------
+
+ # use sequence function to make all dates, range 2006< x < 2016
+all.dates <- seq(as.Date("2006-01-01"), as.Date("2015-12-31"), "day")
+
+# make into a dataframe
+missing.dates.df <- as.data.frame(c(all.dates))
+
+# add another column for frequency 
+missing.dates.df$frequency <- rep(NA, length(all.dates))
+
+# Rename the columns
+colnames(missing.dates.df) <- c("Date", "Frequency")
+
+#-------------------- Merging the missing dates w/ UFO dates -------------------
+
+final.ufo.freq.m <- merge(ufo.freq.table.date.range, missing.dates.df, 
+                        by.x= "Date", by.y="Date", all=TRUE)
+# check to confirm merge worked by looking for NA in the Frequency Data from the
+# UFO dataframe
+any(is.na(final.ufo.freq.m$Frequency.x))
+
+# cut the Frequency.y column
+final.ufo.freq <- final.ufo.freq.m[, c("Date", "Frequency.x")]
+# Rename Frequency.x to Frequency
+colnames(final.ufo.freq) <- c("Date", "Frequency")
+# replace all NA values with 0
+final.ufo.freq$Frequency[is.na(final.ufo.freq$Frequency)] <- 0
+ # check to see if it worked
+any(is.na(final.ufo.freq.n$Frequency))
+# save as csv
+write.csv(final.ufo.freq, paste(path.cd, "final.ufo.freq.csv"))
+
+#-------------------- 
 
