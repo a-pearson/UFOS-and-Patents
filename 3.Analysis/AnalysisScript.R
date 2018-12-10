@@ -86,23 +86,61 @@ write.csv(final.patent.freq, paste(path.cd, "final.patent.freq.csv"))
 
 
 #========= Create the Null Distribution Sampling ===============================
+#
+################################################################################
+#
+# For our null distribution we will be looking at the mean of the sum of patents
+# for 2547-31 samples of 30 days. We will randomly collect 2516 samples of 30 
+# days periods. We will find the sum of patents for each of the 30 days then we
+# will take the mean of these sums. We will repeat this entire process 100 times 
+# to determine out null distribution.
 
-#---- Pulling Samples ----------------------------------------------------------
+#---- Pulling 2516 Samples of 30 days ------------------------------------------
+#
+# create an empty data frame to store all of the means
+null.dis.means <- as.data.frame(NULL)
+
+# this for loop will collect 2516 samples of 30 days, sum the patent number for 
+# each of the 30 day periods and then find the mean number of patent sums within
+# the 2516 samples. It will then run this 10000 times.
+for(i in 1:10000){
+  pull.samples <- sample(final.patent.freq$Frequency, size = 2516*30, 
+                         replace = TRUE) #pull a sample of 30, 2516 times
+  pull.sample <- matrix(pull.samples, 2516) # putting those into a matrix
+  
+  sum.sample <- apply(pull.sample,1,sum)  # summing all the values within a 30
+  # day sample.
+  sample.sums <- as.data.frame(sum.sample) # storeing sums into a data frame
+  null.dis.means[i,1] <- mean(sample.sums[,1])  #taking the mean of the sums and
+  # storing it into a new data frame.
+  
+}
+
+# rename coloumn to mean
+colnames(null.dis.means) <- c("Mean")
+head(null.dis.means)
+
+# save as a csv
+write.csv(null.dis.means, paste(path.cd, "null.dis.means.csv"), row.names = FALSE)
+
+#---- *Pulling Samples (original code for sample dis. no longer applicable)*----
 # we want to pull random samples of 30 from our patent frequency table
 
 # these two pieces of code create a matrix in which each row has 30 columns, and
 # each column is an observation form 1 sample. We have 100 rows, so we then have
 # 100000 samples of 30 randomly selected values form our patent frequency table.
-test.t <- sample(final.patent.freq$Frequency, size = 100000*30, replace = TRUE)
-test <- matrix(test.t, 100000)   # run these two line together
+
+#test.t <- sample(final.patent.freq$Frequency, size = 100000*30, replace = TRUE)
+#test <- matrix(test.t, 100000)   # run these two line together
+
 # now we want to get the mean of each of the samples so...
 # we apply the mean function to each row of the matrix
-sample.mean <- apply(test, 1, mean)
+#sample.mean <- apply(test, 1, mean)
 
-sample.means <- as.data.frame(sample.mean)
+#sample.means <- as.data.frame(sample.mean)
 #---- PLotting the Null Distribution -------------------------------------------
 # we want the means displayed in frequencies in order
-null.dis <- ggplot(data=sample.means, aes(sample.means$sample.mean)) + 
+null.dis.mean.sum <- ggplot(data=null.dis.means, aes(null.dis.means$Mean)) + 
          geom_histogram(col ="blue", bins = 100, fill="light blue") +
   labs(x= "Sample Mean", y= "Frequency") + 
   theme(panel.grid.major = element_blank(), 
@@ -111,17 +149,16 @@ null.dis <- ggplot(data=sample.means, aes(sample.means$sample.mean)) +
          axis.line = element_line(colour = "black"))
 # save the graph
 pdf(paste(path.g, "Null.Dis.Patents.pdf"))
-plot(null.dis)
+plot(null.dis.mean.sum)
 dev.off()
 
-##################### The Observed Sampling Distibution ########################
+########################## The Observed Mean ###################################
 #
 # We need to isolate the days in our UFO data where there were >5 sightings.
 # Then we need to determine the date 2 weeks after each of the days where UFO 
 # sightings were >5. This is our date of interest. From there we need to 
-# determine the mean frequency of patents for 30 days staring at the date of 
-# interest. Once this is done for each of the days of interest, we can plot the
-# means on a histogram.
+# determine the sum patents for the 30 days staring at the date of interest. 
+# Then we will take the mean of these sums. This is our observed mean 
 #
 
 #---- Find Dates where UFO sightings >5 --------------------------------------
@@ -191,14 +228,11 @@ patent.dates.intrest <- merge(final.patent.freq, d.dates.in,
 # date of interest and find the mean. We will do this for all of the days of 
 # interest.
 
-#---- For Loop to Take Mean of 30 Days After Date of Interest ------------------
+#---- For Loop to Take SUM of 30 Days After Date of Interest ------------------
 
-# Build empty matrix for the means
+# create empty vector
+ob.sum <- NULL
 
-ob.samples <- NULL
-
-# build a for loop to take mean of frequencies for each day of interest and the 
-# following 29 days. (this is 30 dya including the day of interest)
 
 for(i in 1:nrow(patent.dates.intrest)){
   if(is.na(patent.dates.intrest[i,3])==FALSE){   # saying if indicator not NA...
@@ -207,20 +241,68 @@ for(i in 1:nrow(patent.dates.intrest)){
       patent.row.no <- i + j   # assign row number 
       t.sum <- t.sum + patent.dates.intrest$Frequency[patent.row.no]
     }   # add up the patent frequencies for each of the 30 rows following a date
-        # of interest
-    t.mean <- t.sum/30  # devide this by 0 to get the mean
+    # of interest
     row.no <- nrow(ob.samples) + 1 # assign new row number
-     ob.samples <- rbind(ob.samples, data.frame(t.mean))  #put mean in dataframe
+    ob.sum <- rbind(ob.sum, data.frame(t.sum))  #put sum in dataframe
 
-    #ob.samples[row.no,1:30] <- patent.dates.intrest[i:i+29,2]
   }
 }
-View(patent.dates.intrest)
-head(ob.samples)
+tail(ob.sum) # the last 31 samples are NA values as the data set does not 
+# contain enough data to look for the whole 30 days following this.
+# excludes all the NA values
+ob.sums <- na.exclude(ob.sum)
 
+#----- Find The Observed Mean --------------------------------------------------
+# find the mean of the patents sums in the 30 days following a day of interest.
+ob.mean <- mean(ob.sums[,1])
+
+#-------------- OG For Loop * no longer applicable* ----------------------------------------------------
+# Build empty matrix for the means
+
+#ob.samples <- NULL
+
+# build a for loop to take mean of frequencies for each day of interest and the 
+# following 29 days. (this is 30 dya including the day of interest)
+
+#for(i in 1:nrow(patent.dates.intrest)){
+  #if(is.na(patent.dates.intrest[i,3])==FALSE){   # saying if indicator not NA...
+   # t.sum <- 0   # them create a variable that = 0
+    #for(j in 1:30){     # then count from 1-30 starting at date of interest
+     # patent.row.no <- i + j   # assign row number 
+      #t.sum <- t.sum + patent.dates.intrest$Frequency[patent.row.no]
+#    }    add up the patent frequencies for each of the 30 rows following a date
+        # of interest
+   # t.mean <- t.sum/30  # devide this by 0 to get the mean
+    #row.no <- nrow(ob.samples) + 1 # assign new row number
+     #ob.samples <- rbind(ob.samples, data.frame(t.mean))  #put mean in dataframe
+
+    #ob.samples[row.no,1:30] <- patent.dates.intrest[i:i+29,2]
+#  }
+#}
+#View(patent.dates.intrest)
+#head(ob.samples)
+#tail(ob.samples)
+
+#sum(is.na (ob.samples$t.mean))
 
 #================= Plotting The Observed Distribution ==========================
 
+# plot the null distribution with a line where our observed mean sits
+null.dis.ob.mean <- ggplot(data=null.dis.means, aes(null.dis.means$Mean)) + 
+  geom_histogram(col ="blue", bins = 100, fill="light blue") +
+  labs(x= "Sample Mean", y= "Frequency") + 
+  theme(panel.grid.major = element_blank(), 
+        panel.grid.minor = element_blank(),
+        panel.background = element_blank(), 
+        axis.line = element_line(colour = "black")) + 
+  geom_vline(xintercept = ob.mean, color= "maroon")
+
+# save the graph.
+pdf(paste(path.g, "Null.dis.ob.mean.pdf"))
+plot(null.dis.ob.mean)
+dev.off()
+
+#-------------- Old Plotting of Observed Distribution not Applicable -----------
 # plot a histogram of the means of pantent applications
 Sighting.dis <- ggplot(data=ob.samples, aes(ob.samples$t.mean)) + 
   geom_histogram(col ="dark red", bins = 100, fill="maroon") +
@@ -239,12 +321,15 @@ dev.off()
 ######################### Running Statistical Tests ############################
 #
 ################################################################################
-# We will use the one sample Wilcox test to determine if the mean of our
-# observed distruibution is significantly different form our null distribution.
+# 
+# For our statistical test we are looking at the the probability of our sample
+# mean occuring given the null distribution created.
+#
 ###############################################################################
 #
 #
-#---- Find the Means of Both Null and Observed Distribution --------------------
+#---- Pull Number of Means Grater than Observed Mean from Null Dis -------------
 
-# the mean of the null sample distribution
-null.mean <- mean(sample.means[,1])
+# count the number of values in our null distribution higher than our observed 
+# mean
+ sum(null.dis.means[null.dis.means$Mean>ob.mean,1])
