@@ -20,7 +20,7 @@ setwd("~/GitHub/UFOS-and-Patents")
 #import the raw data downloaded from Kaggle
 # raw data also save to 1.RawData folder in workflow.
 ufo <- read.csv ("consolidated_weather_V03.csv")
-
+list.files()
 
 
 #========================= Exploring Data ======================================
@@ -163,11 +163,25 @@ write.csv(ufo.cut.final, paste(path.cd, "ufo.dates_range.states.csv"))
 
 
 #--------- Create another Frequency Table for the date range -------------------
+
+# *** There have been issues with this section, however code should fix ***
 table2.t <- table(ufo.cut.final$Date)  # find frequency of each date
+str(table2.t)
+head(table2.t)
+names(table2.t)[1]
 ufo.freq.table.date.range <- as.data.frame(table2.t)  # make the table into data
+str(ufo.freq.table.date.range)
+head(ufo.freq.table.date.range)
 # frame.
 colnames(ufo.freq.table.date.range) <- c("Date", "Frequency")
-write.csv(ufo.freq.table.date.range, paste(path.cd, "UFO.freq.date.range.csv"))
+
+if(ncol(ufo.freq.table.date.range) == 3){
+  ufo.freq.table.date.range <- ufo.freq.table.date.range[, c(2,3)]
+  print("funky X column appeared in ufo.freq.table.date.range")
+}
+
+
+write.csv(ufo.freq.table.date.range, paste(path.cd, "UFO.freq.date.range.TV.csv"), row.names = FALSE)
 # write as a csv. and save
 
 
