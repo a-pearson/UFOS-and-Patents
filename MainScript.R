@@ -8,7 +8,23 @@
 # rest of the project. It also contains housekeeping code.
 #
 ################################################################################
+#
+#================== All Libraries and Files that Must be Loaded ================
+library(openair)
+library(tidyverse)
+library(ggplot2)
+library (ggpubr)
 
+# files that must be loaded:
+# had to reset workign directory to retreve file...
+getwd()
+setwd("2.Clean.Data")
+clean.patent.db<- read.csv( "clean.patent.db.csv")
+ufo.freq.table.date.range <- read.csv("UFO.freq.date.range.csv")
+# reset working directory back to original
+setwd("~/GitHub/UFOS-and-Patents")
+getwd()
+ufo <- read.csv ("consolidated_weather_V03.csv")
 
 
 #============================ WORK FLOW SET UP =================================
