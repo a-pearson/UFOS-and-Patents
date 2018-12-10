@@ -16,6 +16,7 @@ library(tidyverse)
 
 # Confirm working directory
 getwd()
+setwd("~/GitHub/UFOS-and-Patents")
 #import the raw data downloaded from Kaggle
 # raw data also save to 1.RawData folder in workflow.
 ufo <- read.csv ("consolidated_weather_V03.csv")
@@ -166,7 +167,7 @@ table2.t <- table(ufo.cut.final$Date)  # find frequency of each date
 ufo.freq.table.date.range <- as.data.frame(table2.t)  # make the table into data
 # frame.
 colnames(ufo.freq.table.date.range) <- c("Date", "Frequency")
-write.csv(ufo.freq.table.date.range, paste(path.cd, "UFO.freq.date.range"))
+write.csv(ufo.freq.table.date.range, paste(path.cd, "UFO.freq.date.range.csv"))
 # write as a csv. and save
 
 
