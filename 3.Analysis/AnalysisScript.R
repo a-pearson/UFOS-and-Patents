@@ -12,14 +12,19 @@
 #
 ################################################################################
 #
+install.packages("ggpubr")
+
 #--------- Load Libraries and Files --------------------------------------------
 library(openair)
 library(tidyverse)
 library(ggplot2)
+library (ggpubr)
 
+# files that must be loaded:
 # had to reset workign directory to retreve file...
 setwd("2.Clean.Data")
 clean.patent.db<- read.csv( "clean.patent.db.csv",)
+ufo.freq.table.date.range <- read.csv(paste(path.cd, "UFO.freq.date.range.csv"))
 # reset working directory back to original
 setwd("~/GitHub/UFOS-and-Patents")
 getwd()
@@ -89,7 +94,7 @@ write.csv(final.patent.freq, paste(path.cd, "final.patent.freq.csv"))
 # each column is an observation form 1 sample. We have 100 rows, so we then have
 # 100000 samples of 30 randomly selected values form our patent frequency table.
 test.t <- sample(final.patent.freq$Frequency, size = 100000*30, replace = TRUE)
-test <- matrix(test.t, 100000)
+test <- matrix(test.t, 100000)   # run these two line together
 # now we want to get the mean of each of the samples so...
 # we apply the mean function to each row of the matrix
 sample.mean <- apply(test, 1, mean)
@@ -131,11 +136,10 @@ nrow(ufo.freq.critical) # count number of days.
 # This is our delay period to account for time required to produce patent 
 # application. Our dates if interest are 14 days after the sighting of >5.
 
-# change the Date variavle to be recognized as class "Date"
+# change the Date variable to be recognized as class "Date"
 class(ufo.freq.critical$Date)
 ufo.freq.critical$Date<- as.Date(ufo.freq.critical$Date)
 class(ufo.freq.critical$Date)
-
 
 ufo.freq.critical$Delayed
 # add 14 days to each date in the data frame
@@ -144,6 +148,7 @@ ufo.freq.critical$Delayed
 # column in our data frame.
 f <- nrow(ufo.freq.critical)
 for(i in 1:f){
+  i <- 1
   ufo.freq.critical$Delayed[i] <- as.Date(ufo.freq.critical[i,1]) + 14
 }
 # check to ensure it ran correctly
@@ -152,7 +157,7 @@ head(ufo.freq.critical)
 
 
 
-
+class(ufo.freq.critical$Date)
 #============== Combining UFO Sighting Data and Patent Frequency ===============
 #
 #  In this section we want to make a new data frame with just the dates of 
@@ -231,6 +236,16 @@ pdf(paste(path.g, "Sighting.Dis.Patents.1.pdf"))
 plot(Sighting.dis)
 dev.off()
 
+
 ######################### Running Statistical Tests ############################
+#
+################################################################################
+# We will use the one sample Wilcox test to determine if the mean of our
+# observed distruibution is significantly different form our null distribution.
+###############################################################################
+#
+#
+#---- Find the Means of Both Null and Observed Distribution --------------------
 
-
+# the mean of the null sample distribution
+null.mean <- 
