@@ -24,7 +24,7 @@ library (ggpubr)
 # had to reset workign directory to retreve file...
 setwd("2.Clean.Data")
 clean.patent.db<- read.csv( "clean.patent.db.csv",)
-ufo.freq.table.date.range <- read.csv(paste(path.cd, "UFO.freq.date.range.csv"))
+ufo.freq.table.date.range <- read.csv(paste(path.cd, "UFO.freq.date.range.TV.csv"))
 # reset working directory back to original
 setwd("~/GitHub/UFOS-and-Patents")
 getwd()
@@ -146,17 +146,16 @@ ufo.freq.critical$Delayed
 
 # Create for loop to add 14 ays to each date and then give these dates in a new
 # column in our data frame.
-f <- nrow(ufo.freq.critical)
-for(i in 1:f){
-  i <- 1
-  ufo.freq.critical$Delayed[i] <- as.Date(ufo.freq.critical[i,1]) + 14
-}
+
+ufo.freq.critical$Delayed <- ufo.freq.critical$Date + 14
+head(ufo.freq.critical)
+
 # check to ensure it ran correctly
 head(ufo.freq.critical)
 
+class(ufo.freq.critical[1,2])
 
-
-
+str(ufo.freq.critical)
 class(ufo.freq.critical$Date)
 #============== Combining UFO Sighting Data and Patent Frequency ===============
 #
@@ -248,4 +247,4 @@ dev.off()
 #---- Find the Means of Both Null and Observed Distribution --------------------
 
 # the mean of the null sample distribution
-null.mean <- 
+null.mean <- mean(sample.means[,1])
