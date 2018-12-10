@@ -1,3 +1,6 @@
+#################################################
+#============Setup workspace===========#
+
 #Determine working directory, assign an object to it
 work.d <- getwd()
 
@@ -5,8 +8,8 @@ work.d <- getwd()
 out.put.folders <- c("1.Raw.Data","2.Clean.Data", "3.Analysis",
                      "4.Graphs", "5.GraphsTable")
 
-#Check to see if folders exist, if not, create function to create them
 
+#Check to see if folders exist, if not, create function to create them
 # This loop checks goes through the given out.put.folders list and checks to
 # see if theyexisit in the working directory.
 # If they don't they print "does not exist" and creates them,
@@ -23,7 +26,7 @@ for(i in 1:length(out.put.folders)){
   }
 }
 
-#Setup the pathways
+#============Pathways==========#
 
 #Path to 1.RawData folder
 path.rd <- paste(work.d,"/",out.put.folders[1], "/", sep="")
@@ -44,17 +47,23 @@ path.g <- paste(work.d,"/",out.put.folders[4], "/", sep="")
 #Path to Table folder in 4.Graphs folder
 path.t <- paste(work.d,"/",out.put.folders[5], "/", sep="")
 
+##########################################################
+
+#=================Cleaning the raw patent data==================#
+
+#====Main patent database====#
+
 #Import the rawdata for the patents database
 #International Patent Classification data for all patents
-#13,051,297 rows
+#13,051,297 rows, 2GB in size
 
-raw.ipcr <- read.delim("ipcr.tsv")
+raw.ipcr <- read.delim("ipcr.tsv") #read as delim because of tsv format
 
 #Check the import
-head(raw.ipcr)
-tail(raw.ipcr)
-str(raw.ipcr)
-class(raw.ipcr)
+head(raw.ipcr) #check first six rows
+tail(raw.ipcr) #check last six rows
+str(raw.ipcr) #check structure
+class(raw.ipcr) #check the elements
 
 #The dataset contains a lot of missing values, we want to remove all of these
 
@@ -66,15 +75,22 @@ raw.ipcr.a <- na.omit(raw.ipcr) #Remove all rows containing NULL values
 #save it to files and data frames in betweeen the process
 write.csv(raw.ipcr.a, paste(path.rd, "clean.ipcr.csv"))
 
+#Because of the limitations of working memory and using R, saving the 
+#intermediate files in between cleaning saved memory and also allowed
+#for faster processing 
+
 #Write it to a csv to make data cleaning more efficent, tsv is difficult
 
-#           clean.icpr <- read.csv("clean.ipcr.csv")
+# clean.icpr <- read.csv("clean.ipcr.csv") #initial attempted code
 
 #There are issues with reading this file. The RStudio Connect process runs
 #as the root user. It needs escalated privileges to allow binding to protected
 #ports and to create “unshare” environments where content processes are run.
 #Manually load the csv to overcome Sandboxing issue
-#Turns out the problem was actually a typo
+
+#Turns out the problem was actually a typo, R was saving files with a space in
+#front of them. Resolved this by checking what code the IDE was using to import
+#it, then used it myself 
 
 clean.ipcr <- read.csv(" cleanipcr.csv")
 
@@ -87,7 +103,14 @@ clean.icpr2[order(as.Date(clean.icpr2$clean.ipcr.action_date)),]
 #The patent data is now completely clean and can be written into the CD folder
 write.csv(clean.icpr2, paste(path.cd,"clean.patent.data.csv")
 
-
+#The code here is a bit unneat because of how the colnames were randomly assigned, 
+#but they are assigned at the end. Though not the most aesthetic, these colnames
+#allowed the distinction between the many data-frames in the envir. 
+          
+#########################################################################          
+          
+#================Cleaning location & assignee data======================#
+          
 #Now begin to link location to the patent ID. We must use two different
 #metadata table assosciate with the assignee_id
 
@@ -125,6 +148,8 @@ main.patentdb$X <- NULL
 #take a random sample of the main database as well
 sample.main <- main.patentdb[sample(1:nrow(main.patentdb), 100000,
                                     replace=FALSE),]
+
+#================Merging the data frames======================# 
 
 #merge the two databases to form the final database
 final.db <- merge(patent.id.location, sample.main, by.x = "patent_id",
@@ -165,3 +190,4 @@ colnames(complete.db) <- names
 
 #Write to disk
 write.csv(complete.db, "clean.patent.db.csv")
+##############################################################################333
