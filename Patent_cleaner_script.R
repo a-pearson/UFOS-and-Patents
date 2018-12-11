@@ -1,53 +1,11 @@
-#################################################
-#============Setup workspace===========#
+#####Note#####
 
-#Determine working directory, assign an object to it
-work.d <- getwd()
-
-#Define with a vector, the names of the folders
-out.put.folders <- c("1.Raw.Data","2.Clean.Data", "3.Analysis",
-                     "4.Graphs", "5.GraphsTable")
-
-
-#Check to see if folders exist, if not, create function to create them
-# This loop checks goes through the given out.put.folders list and checks to
-# see if theyexisit in the working directory.
-# If they don't they print "does not exist" and creates them,
-# if it does exist it prints "does exist"
-
-for(i in 1:length(out.put.folders)){
-
-  if(!file.exists(out.put.folders[i])){
-    print(paste(i, "does not exist"))
-    dir.create(out.put.folders[i])
-  }
-  else  {
-    print(paste(i,"does exist"))
-  }
-}
-
-#============Pathways==========#
-
-#Path to 1.RawData folder
-path.rd <- paste(work.d,"/",out.put.folders[1], "/", sep="")
-
-#Test the pathway
-x.t <- c(5)
-write.csv(x.t,paste(path.rd, "test.x.csv"), row.names=FALSE)
-
-#Path to 2.Clean.Data
-path.cd <- paste(work.d,"/",out.put.folders[2], "/", sep="")
-
-#Path to 3.Analysis
-path.a <- paste(work.d,"/",out.put.folders[3], "/", sep="")
-
-#Path to 4.Graphs
-path.g <- paste(work.d,"/",out.put.folders[4], "/", sep="")
-
-#Path to Table folder in 4.Graphs folder
-path.t <- paste(work.d,"/",out.put.folders[5], "/", sep="")
-
-##########################################################
+#The raw data used for this script was too large to be pushed to the repo.
+#But they can all be accessed here;
+#Main DB: http://s3.amazonaws.com/data-patentsview-org/20180528/download/ipcr.tsv.zip
+#Location DB: http://s3.amazonaws.com/data-patentsview-org/20180528/download/location.tsv.zip
+#Location_A DB: http://s3.amazonaws.com/data-patentsview-org/20180528/download/location_assignee.tsv.zip
+#Assignee_MD_DN: http://s3.amazonaws.com/data-patentsview-org/20180528/download/assignee.tsv.zip
 
 #=================Cleaning the raw patent data==================#
 
