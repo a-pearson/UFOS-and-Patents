@@ -1,6 +1,6 @@
 ################################################################################
 
-#                                 MAIN SCRIPT                                  #
+#                                ~ MAIN SCRIPT ~                               #
 
 ################################################################################
 #
@@ -12,7 +12,11 @@
 #   The Scripts within this project should be run in the following order:
 #                   - MainScript
 #                   - cleaning.ufo.data
-#                   - Patent_cleaner_script
+#                   - Patent_cleaner_script  *raw files for this script are too
+#                       large to be included in repo and must be downloaded for
+#                       this script to run. All cleaned patent data is located 
+#                       in the repo and all other scripts do not rely on the raw
+#                       data to run.*
 #                   - AnalysisScript
 #
 ################################################################################
