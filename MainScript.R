@@ -22,20 +22,40 @@
 ################################################################################
 #
 #================== All Libraries and Files that Must be Loaded ================
+
+#---- Libraries ----------------------------------------------------------------
 library(openair)
 library(tidyverse)
 library(ggplot2)
 library (ggpubr)
+library (patentsview)
+library (data.table)
 
-# files that must be loaded:
+
+#files that must be loaded:
+
+#------ Patent Data (Cleaned) --------------------------------------------------
 # had to reset working directory to retreve file...
 setwd("2.Clean.Data")
-clean.patent.db<- read.csv( "clean.patent.db.csv",)
-ufo.freq.table.date.range <- read.csv(paste(path.cd, "UFO.freq.date.range.TV.csv"))
+clean.patent.db<- read.csv( "clean.patent.db.csv") 
+
+#------ UFO Data Raw -----------------------------------------------------------
 # reset working directory back to original
 setwd("~/GitHub/UFOS-and-Patents")
 getwd()
 ufo <- read.csv ("consolidated_weather_V03.csv")
+# Raw UFO data obtained from the link below
+# https://www.kaggle.com/emorelli/consolidated-ufo-weather-data?fbclid=IwAR1MXNp9DO_FY1gEuXL9N4R7_Upu-7C3jd3Zr3sfDF5pxdcbHuDMbvAH_8M
+
+#----- UFO Data (Cleaned, used in Analysis script) -----------------------------
+setwd("2.Clean.Data")
+ufo.freq.table.date.range <- read.csv(paste(path.cd, "UFO.freq.date.range.TV.csv"))
+# reset working directory back to original
+setwd("~/GitHub/UFOS-and-Patents")
+getwd()
+
+
+
 
 
 #================================ Variables ====================================
