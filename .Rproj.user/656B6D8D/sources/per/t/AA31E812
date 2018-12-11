@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1544514351845.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "97297794",
+    "id" : "AA31E812",
+    "lastKnownWriteTime" : 1544466898,
+    "last_content_update" : 1544466898,
+    "path" : "~/GitHub/UFOS-and-Patents/cleaning.ufo.data.R",
+    "project_path" : "cleaning.ufo.data.R",
+    "properties" : {
+        "cursorPosition" : "232,20",
+        "scrollLine" : "211"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
