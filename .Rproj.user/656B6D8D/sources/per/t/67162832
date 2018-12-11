@@ -1,0 +1,20 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1544505717703.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3565702046",
+    "id" : "67162832",
+    "lastKnownWriteTime" : 1544472041,
+    "last_content_update" : 1544472041,
+    "path" : "~/GitHub/UFOS-and-Patents/Patent_cleaner_script.R",
+    "project_path" : "Patent_cleaner_script.R",
+    "properties" : {
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
