@@ -1,15 +1,38 @@
-#####Note#####
+################################################################################
+#                                                                              #
+#                        Patent Cleaning Script                                #
+#                                                                              #
+################################################################################
+
+################################################################################
+#
+#   This script details the cleaning and sorting of the patent data.
+#
+################################################################################
+
+#-=-=-=-=-=-=-=-==-=-=-=-=-=-= NOTE -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 #The raw data used for this script was too large to be pushed to the repo.
 #But they can all be accessed here;
-#Main DB: http://s3.amazonaws.com/data-patentsview-org/20180528/download/ipcr.tsv.zip
-#Location DB: http://s3.amazonaws.com/data-patentsview-org/20180528/download/location.tsv.zip
-#Location_A DB: http://s3.amazonaws.com/data-patentsview-org/20180528/download/location_assignee.tsv.zip
-#Assignee_MD_DN: http://s3.amazonaws.com/data-patentsview-org/20180528/download/assignee.tsv.zip
+#Main DB: 
+# http://s3.amazonaws.com/data-patentsview-org/20180528/download/ipcr.tsv.zip
 
-#=================Cleaning the raw patent data==================#
+#Location DB: 
+# http://s3.amazonaws.com/data-patentsview-org/20180528/download/location.tsv.zip
 
-#====Main patent database====#
+#Location_A DB: 
+# http://s3.amazonaws.com/data-patentsview-org/20180528/download/location_assignee.tsv.zip
+
+#Assignee_MD_DN: 
+# http://s3.amazonaws.com/data-patentsview-org/20180528/download/assignee.tsv.zip
+
+
+#-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+
+#================= Cleaning the Raw Patent Data ================================
+
+#---- Main Patent Database -----------------------------------------------------
 
 #Import the rawdata for the patents database
 #International Patent Classification data for all patents
@@ -61,13 +84,13 @@ clean.icpr2[order(as.Date(clean.icpr2$clean.ipcr.action_date)),]
 #The patent data is now completely clean and can be written into the CD folder
 write.csv(clean.icpr2, paste(path.cd,"clean.patent.data.csv")
 
-#The code here is a bit unneat because of how the colnames were randomly assigned, 
+#The code here is a bit messy because of how the colnames were randomly assigned, 
 #but they are assigned at the end. Though not the most aesthetic, these colnames
 #allowed the distinction between the many data-frames in the envir. 
           
-#########################################################################          
+################################################################################         
           
-#================Cleaning location & assignee data======================#
+#================ Cleaning Location & Assignee Data ============================
           
 #Now begin to link location to the patent ID. We must use two different
 #metadata table assosciate with the assignee_id
@@ -107,7 +130,7 @@ main.patentdb$X <- NULL
 sample.main <- main.patentdb[sample(1:nrow(main.patentdb), 100000,
                                     replace=FALSE),]
 
-#================Merging the data frames======================# 
+#================ Merging the data frames ======================================
 
 #merge the two databases to form the final database
 final.db <- merge(patent.id.location, sample.main, by.x = "patent_id",
