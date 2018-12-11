@@ -4,8 +4,16 @@
 
 ################################################################################
 #
-#  This script contains the code to set up the work flow used thorughout the 
-# rest of the project. It also contains housekeeping code.
+#   This script contains the code to set up the work flow used thorughout the 
+#   rest of the project. It also contains housekeeping code.
+#
+#   Project to use: "UFO Big Data.Rproj"
+#
+#   The Scripts within this project should be run in the following order:
+#                   - MainScript
+#                   - cleaning.ufo.data
+#                   - Patent_cleaner_script
+#                   - AnalysisScript
 #
 ################################################################################
 #
@@ -16,11 +24,10 @@ library(ggplot2)
 library (ggpubr)
 
 # files that must be loaded:
-# had to reset workign directory to retreve file...
-getwd()
+# had to reset working directory to retreve file...
 setwd("2.Clean.Data")
-clean.patent.db<- read.csv( "clean.patent.db.csv")
-ufo.freq.table.date.range <- read.csv("UFO.freq.date.range.csv")
+clean.patent.db<- read.csv( "clean.patent.db.csv",)
+ufo.freq.table.date.range <- read.csv(paste(path.cd, "UFO.freq.date.range.TV.csv"))
 # reset working directory back to original
 setwd("~/GitHub/UFOS-and-Patents")
 getwd()
@@ -37,8 +44,11 @@ ufo.crit.val <- 5   # this was determined in the cleaning.ufo.data script, it is
 # Delay period before sampling of patent frequencies.
 delay.period <- 14
 
-# Length of sample period after delay (in days)
+# Length of sample period after delay (in days).
 sample.period <- 30
+
+# Number of samples the null distribution runs. 
+null.run.times <- 10000
 
 #============================ WORK FLOW SET UP =================================
 work.d <- getwd()
