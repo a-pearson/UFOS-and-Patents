@@ -95,20 +95,64 @@ write.csv(final.patent.freq, paste(path.cd, "final.patent.freq.csv"))
 # will take the mean of these sums. We will repeat this entire process 100 times 
 # to determine out null distribution.
 
-#---- Pulling 2516 Samples of 30 days ------------------------------------------
+#=========== Find UFO Sighting Dates ===========================================
+
+#---- Find Dates where UFO sightings > ufo.crit.val ----------------------------
+
+# pull UFO data for days with more than critical value of sightings
+head(ufo.freq.table.date.range)
+ufo.freq.critical <- ufo.freq.table.date.range[
+  ufo.freq.table.date.range$Frequency>ufo.crit.val,]  
+
+# save the number of critical days to variable for later use
+num.crit.days <- nrow(ufo.freq.critical)
+
+
+
+#======== Pulling Desired Number of Samples of sample.period days ==============
 #
 # create an empty data frame to store all of the means
 null.dis.means <- as.data.frame(NULL)
+
+#---- Determining Number of sample.periods to Call -------------------------------------
+# To determine the number of sample periods to specify in our null loop we need 
+# to know how many sample periods will be taken from ufo critical sighting dates.
+# This is equal to the number of critical dates identified minus any critical
+# dates that fall within a sample.period of the last date in our patent 
+# frequency data set. We can find this by running one our loop once, with the
+# number of sampling periods pulled equaling the number of critical dates. Then
+# we can count the number of NA values returned by that loop (these are sum 
+# values for which our critical date was within one sample period of the end 
+# date), and subtract this from the total number of crtical values. This gives 
+# us the total number of critical dates for which we will be able to run our 
+# test.
+
+
+# first we run the for loop with the number of critical dates. 
+for(i in 1:1){
+  pull.samples <- sample(final.patent.freq$Frequency, size = num.crit.days*sample.period, 
+                         replace = TRUE) #pull a number of day = sample.period 
+                                        # repeat x= num.crit.days times
+  pull.sample <- matrix(pull.samples, num.crit.days) # putting those into a matrix
+  
+  sum.sample <- apply(pull.sample,1,sum)  # sum values within a sample.period
+  # day sample.
+  sample.sums <- as.data.frame(sum.sample) # storeing sums into a data frame
+  
+}
+# now we count the number of NA values produced
+num.na <- sum(is.na(sample.sums))
+tail(sample.sums)
 
 # this for loop will collect 2516 samples of 30 days, sum the patent number for 
 # each of the 30 day periods and then find the mean number of patent sums within
 # the 2516 samples. It will then run this 10000 times.
 for(i in 1:10000){
-  pull.samples <- sample(final.patent.freq$Frequency, size = 2516*30, 
-                         replace = TRUE) #pull a sample of 30, 2516 times
+  pull.samples <- sample(final.patent.freq$Frequency, size = 2516*sample.period, 
+                         replace = TRUE) #pull a sample of , 2516 times
   pull.sample <- matrix(pull.samples, 2516) # putting those into a matrix
   
-  sum.sample <- apply(pull.sample,1,sum)  # summing all the values within a 30
+  sum.sample <- apply(pull.sample,1,sum)  # sum values within a sample.period
   # day sample.
   sample.sums <- as.data.frame(sum.sample) # storeing sums into a data frame
   null.dis.means[i,1] <- mean(sample.sums[,1])  #taking the mean of the sums and
@@ -123,7 +167,7 @@ head(null.dis.means)
 # save as a csv
 write.csv(null.dis.means, paste(path.cd, "null.dis.means.csv"), row.names = FALSE)
 
-#---- *Pulling Samples (original code for sample dis. no longer applicable)*----
+#---- *Pulling Samples (original code for sample dis. NO LONGER APPLICABLE)*----
 # we want to pull random samples of 30 from our patent frequency table
 
 # these two pieces of code create a matrix in which each row has 30 columns, and
@@ -138,6 +182,9 @@ write.csv(null.dis.means, paste(path.cd, "null.dis.means.csv"), row.names = FALS
 #sample.mean <- apply(test, 1, mean)
 
 #sample.means <- as.data.frame(sample.mean)
+
+
+
 #---- PLotting the Null Distribution -------------------------------------------
 # we want the means displayed in frequencies in order
 null.dis.mean.sum <- ggplot(data=null.dis.means, aes(null.dis.means$Mean)) + 
@@ -154,46 +201,15 @@ dev.off()
 
 ########################## The Observed Mean ###################################
 #
-# We need to isolate the days in our UFO data where there were >5 sightings.
-# Then we need to determine the date 2 weeks after each of the days where UFO 
-# sightings were >5. This is our date of interest. From there we need to 
-# determine the sum patents for the 30 days staring at the date of interest. 
-# Then we will take the mean of these sums. This is our observed mean 
+# We need to isolate the days in our UFO data where there were > ufo.crit.val 
+# sightings. Then we need to determine the date 2 weeks after each of the days 
+# where UFO sightings were > ufo.crit.val. This is our date of interest. From 
+# there we need to determine the sum patents for the sample.period staring at 
+# the date of interest.Then we will take the mean of these sums. This is our 
+# observed mean. 
 #
 
-#---- Find Dates where UFO sightings >5 --------------------------------------
 
-# pull UFO data for days with more than 5 sightings
-head(ufo.freq.table.date.range)
-ufo.freq.critical <- ufo.freq.table.date.range[
-  ufo.freq.table.date.range$Frequency>5,]  
-nrow(ufo.freq.critical) # count number of days.
-
-#---- Add 2 Week Period to Each Date ------------------------------------------
-# This is our delay period to account for time required to produce patent 
-# application. Our dates if interest are 14 days after the sighting of >5.
-
-# change the Date variable to be recognized as class "Date"
-class(ufo.freq.critical$Date)
-ufo.freq.critical$Date<- as.Date(ufo.freq.critical$Date)
-class(ufo.freq.critical$Date)
-
-ufo.freq.critical$Delayed
-# add 14 days to each date in the data frame
-
-# Create for loop to add 14 ays to each date and then give these dates in a new
-# column in our data frame.
-
-ufo.freq.critical$Delayed <- ufo.freq.critical$Date + 14
-head(ufo.freq.critical)
-
-# check to ensure it ran correctly
-head(ufo.freq.critical)
-
-class(ufo.freq.critical[1,2])
-
-str(ufo.freq.critical)
-class(ufo.freq.critical$Date)
 #============== Combining UFO Sighting Data and Patent Frequency ===============
 #
 #  In this section we want to make a new data frame with just the dates of 
@@ -203,6 +219,27 @@ class(ufo.freq.critical$Date)
 # dates of interest and NA for dates of non-interest. This will allow us to 
 # easily query for patent frequencies on dates of interest.
 
+#---- Add Delay Period to Each Critical Date -----------------------------------
+# This is our delay period to account for time required to produce patent 
+# application. Our dates if interest = the delay.period of days after the 
+# sighting of > ufo.crit.val.
+
+# change the Date variable to be recognized as class "Date"
+class(ufo.freq.critical$Date)
+ufo.freq.critical$Date<- as.Date(ufo.freq.critical$Date)
+class(ufo.freq.critical$Date)
+
+ufo.freq.critical$Delayed
+# add delay.period days to each date in the data frame
+
+# Create for loop to add delay.period days to each date and then give these 
+# dates in a new column in our data frame.
+
+ufo.freq.critical$Delayed <- ufo.freq.critical$Date + delay.period
+head(ufo.freq.critical)
+
+# check to ensure it ran correctly
+head(ufo.freq.critical)
 #---- Create New Data Frame ----------------------------------------------------
 # create data frame with Delayed dates and Indicator column.
 d.dates.in <- data.frame(ufo.freq.critical$Delayed)  # make new dataframe with
@@ -221,6 +258,7 @@ patent.dates.intrest <- merge(final.patent.freq, d.dates.in,
 # We not have our dates of interest connected to our patent frequencies. We also
 # have an indicator column so we can easily query only rows that contain dates 
 # of interest
+
 
 #=============== Sampleing 30 Days Following a Day of Interest =================
 #
@@ -285,6 +323,7 @@ ob.mean <- mean(ob.sums[,1])
 
 #sum(is.na (ob.samples$t.mean))
 
+
 #================= Plotting The Observed Distribution ==========================
 
 # plot the null distribution with a line where our observed mean sits
@@ -316,6 +355,7 @@ Sighting.dis <- ggplot(data=ob.samples, aes(ob.samples$t.mean)) +
 pdf(paste(path.g, "Sighting.Dis.Patents.1.pdf"))
 plot(Sighting.dis)
 dev.off()
+
 
 
 ######################### Running Statistical Tests ############################
