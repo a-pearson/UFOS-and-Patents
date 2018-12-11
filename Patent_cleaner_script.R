@@ -76,15 +76,16 @@ write.csv(raw.ipcr.a, paste(path.rd, "clean.ipcr.csv"))
 setwd(path.rd)
 
 clean.ipcr <- read.csv(" cleanipcr.csv")
+#Do not know why R saved this file with a space in front.
 
-clean.icpr2 <- data.frame(clean.ipcr$patent_id, clean.ipcr$section,
+clean.ipcr2 <- data.frame(clean.ipcr$patent_id, clean.ipcr$section,
                                                 clean.ipcr$action_date)
 
 #Order the action_date, as a date, then sort
-clean.icpr2[order(as.Date(clean.icpr2$clean.ipcr.action_date)),]
+clean.ipcr2[order(as.Date(clean.ipcr2$clean.ipcr.action_date)),]
 
 #The patent data is now completely clean and can be written into the CD folder
-write.csv(clean.icpr2, paste(path.cd,"clean.patent.data.csv")
+write.csv(clean.ipcr2, paste(path.cd,"clean.patent.data.csv")
 
 #The code here is a bit messy because of how the colnames were randomly assigned, 
 #but they are assigned at the end. Though not the most aesthetic, these colnames
@@ -150,6 +151,7 @@ gc() #clear memory
 clean.final2 <- clean.final[!clean.final$clean.ipcr.section == "D", ]
 gc() #clear memory
 clean.final3 <- clean.final2[!clean.final2$clean.ipcr.section == "E", ]
+#Run in three separate lines because of working memory limitations 
 
 clean.final3$X <- NULL #Drop the unrequired collumn
 
