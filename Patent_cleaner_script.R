@@ -73,6 +73,8 @@ write.csv(raw.ipcr.a, paste(path.rd, "clean.ipcr.csv"))
 #front of them. Resolved this by checking what code the IDE was using to import
 #it, then used it myself 
 
+setwd(path.rd)
+
 clean.ipcr <- read.csv(" cleanipcr.csv")
 
 clean.icpr2 <- data.frame(clean.ipcr$patent_id, clean.ipcr$section,
