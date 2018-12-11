@@ -13,7 +13,7 @@
 #-=-=-=-=-=-=-=-==-=-=-=-=-=-= NOTE -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 #The raw data used for this script was too large to be pushed to the repo.
-#But they can all be accessed here;
+#But they can all be accessed here, and must be placed in thec ~root folder.
 #Main DB: 
 # http://s3.amazonaws.com/data-patentsview-org/20180528/download/ipcr.tsv.zip
 
