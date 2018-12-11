@@ -126,6 +126,7 @@ head(ufo.freq.critical)
 
 # check to ensure it ran correctly
 head(ufo.freq.critical)
+
 #============== Combining UFO Sighting Data and Patent Frequency ===============
 #  In this section we want to make a new data frame with just the dates of 
 # interest and an indicator column. We will then merge with the Patenet 
@@ -151,14 +152,7 @@ patent.dates.intrest <- merge(final.patent.freq, d.dates.in,
                               by.x= "action_date", by.y="date_interest", all=TRUE)
 # We not have our dates of interest connected to our patent frequencies. We also
 # have an indicator column so we can easily query only rows that contain dates 
-# of interest
-
-
-
-
-
-
-
+# of interest.
 
 ########################## The Observed Mean ###################################
 #
@@ -280,25 +274,6 @@ head(null.dis.means)
 # save as a csv
 write.csv(null.dis.means, paste(path.cd, "null.dis.means.csv"), row.names = FALSE)
 
-#---- *Pulling Samples (original code for sample dis. NO LONGER APPLICABLE)*----
-# we want to pull random samples of 30 from our patent frequency table
-
-# these two pieces of code create a matrix in which each row has 30 columns, and
-# each column is an observation form 1 sample. We have 100 rows, so we then have
-# 100000 samples of 30 randomly selected values form our patent frequency table.
-
-#test.t <- sample(final.patent.freq$Frequency, size = 100000*30, replace = TRUE)
-#test <- matrix(test.t, 100000)   # run these two line together
-
-# now we want to get the mean of each of the samples so...
-# we apply the mean function to each row of the matrix
-#sample.mean <- apply(test, 1, mean)
-
-#sample.means <- as.data.frame(sample.mean)
-
-
-
-
 
 #======================== PLotting the Null Distribution =======================
 #
@@ -318,55 +293,6 @@ null.dis.mean.sum <- ggplot(data=null.dis.means, aes(null.dis.means$Mean)) +
 pdf(paste(path.g, "Null.Dis.Patents.pdf"))
 plot(null.dis.mean.sum)
 dev.off()
-
-
-#-------------- OG For Loop * NO LONGER APPLICABLE * ---------------------------
-# Build empty matrix for the means
-
-#ob.samples <- NULL
-
-# build a for loop to take mean of frequencies for each day of interest and the 
-# following 29 days. (this is 30 dya including the day of interest)
-
-#for(i in 1:nrow(patent.dates.intrest)){
-  #if(is.na(patent.dates.intrest[i,3])==FALSE){   # saying if indicator not NA...
-   # t.sum <- 0   # them create a variable that = 0
-    #for(j in 1:30){     # then count from 1-30 starting at date of interest
-     # patent.row.no <- i + j   # assign row number 
-      #t.sum <- t.sum + patent.dates.intrest$Frequency[patent.row.no]
-#    }    add up the patent frequencies for each of the 30 rows following a date
-        # of interest
-   # t.mean <- t.sum/30  # devide this by 0 to get the mean
-    #row.no <- nrow(ob.samples) + 1 # assign new row number
-     #ob.samples <- rbind(ob.samples, data.frame(t.mean))  #put mean in dataframe
-
-    #ob.samples[row.no,1:30] <- patent.dates.intrest[i:i+29,2]
-#  }
-#}
-#View(patent.dates.intrest)
-#head(ob.samples)
-#tail(ob.samples)
-
-#sum(is.na (ob.samples$t.mean))
-
-
-
-#-------------- Old Observed Distribution *NO LONGER APPLICABLE*  -----------
-# plot a histogram of the means of pantent applications
-#Sighting.dis <- ggplot(data=ob.samples, aes(ob.samples$t.mean)) + 
-  #geom_histogram(col ="dark red", bins = 100, fill="maroon") +
-  #labs(x= "Mean", y= "Frequency") + 
-  #theme(panel.grid.major = element_blank(), 
-        #panel.grid.minor = element_blank(),
-        #panel.background = element_blank(), 
-        #axis.line = element_line(colour = "black"))
-
-# save the graph
-#pdf(paste(path.g, "Sighting.Dis.Patents.1.pdf"))
-#plot(Sighting.dis)
-#dev.off()
-
-
 
 
 ######################### Running Statistical Tests ############################
