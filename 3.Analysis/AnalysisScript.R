@@ -391,3 +391,20 @@ dev.off()
 p.value <- ((num.grater.equal*2)+1)/(null.run.times)
 
 # our p-value is 1e-04
+
+#---- Determining The Mean and SD for the Null Distribution --------------------
+
+# find the mean mean of our null distribution.
+mean.of.null <- mean(null.dis.means$Mean)
+# 14.68
+
+# find the Standard Deviation of our null distribution
+sd.null <- sd(null.dis.means$Mean) # this is actually also our standard error
+# SD = 0.25
+
+# Find the 95% CI
+ci.null <- 2*(sd.null)
+# upper limit
+up.lim <- mean.of.null+ci.null
+#lower limit
+lo.lim <- mean.of.null-ci.null
