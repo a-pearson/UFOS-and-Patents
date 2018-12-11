@@ -6,21 +6,9 @@
 # Downloaded Data Contained:
       #  Consolidated UFO and Weather Data
 
-# -------- Packages & Libraries Used -------------------------------------------
-install.packages("tidyverse")
-install.packages("openair")
-library(openair)
-library(tidyverse)
-
-#--------- Importing Data ------------------------------------------------------
-
 # Confirm working directory
 getwd()
 setwd("~/GitHub/UFOS-and-Patents")
-#import the raw data downloaded from Kaggle
-# raw data also save to 1.RawData folder in workflow.
-ufo <- read.csv ("consolidated_weather_V03.csv")
-list.files()
 
 
 #========================= Exploring Data ======================================
