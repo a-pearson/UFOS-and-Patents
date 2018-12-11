@@ -48,7 +48,7 @@ class(raw.ipcr) #check the elements
 
 #The dataset contains a lot of missing values, we want to remove all of these
 
-raw.ipcr[raw.icpr == "NULL"] = NA
+raw.ipcr[raw.ipcr == "NULL"] = NA
 raw.ipcr.a <- na.omit(raw.ipcr) #Remove all rows containing NULL values
 
 #I initially attempted to clean it all from the one table,
