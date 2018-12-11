@@ -27,6 +27,19 @@ getwd()
 ufo <- read.csv ("consolidated_weather_V03.csv")
 
 
+#================================ Variables ====================================
+
+# Number of UFO sightings required to make it a date of interest.
+ufo.crit.val <- 5   # this was determined in the cleaning.ufo.data script, it is
+                    # based off the mean frequency of UFO sightings during the
+                    # data time period.
+
+# Delay period before sampling of patent frequencies.
+delay.period <- 14
+
+# Length of sample period after delay (in days)
+sample.period <- 30
+
 #============================ WORK FLOW SET UP =================================
 work.d <- getwd()
 
