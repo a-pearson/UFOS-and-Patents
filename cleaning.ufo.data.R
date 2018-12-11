@@ -132,7 +132,7 @@ for(i in 1:4){
 
 table.1.t <- table(ufo.cut$Date) # use table to find frequencies
 
-View(ufo.cut$Date)
+#View(ufo.cut$Date)
 
 ufo.freq.table.all.dates <- as.data.frame(table.1.t) # change to dataframe.
 
